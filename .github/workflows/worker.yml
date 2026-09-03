@@ -8,14 +8,13 @@ on:
     - cron: "0 */5 * * *"
   workflow_dispatch: {}
 
-concurrency:
-  group: visage-worker-${{ matrix.slot }}
-  cancel-in-progress: false
-
 jobs:
   worker:
     runs-on: ubuntu-latest
     timeout-minutes: 340
+    concurrency:
+      group: visage-worker-${{ matrix.slot }}
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix:
