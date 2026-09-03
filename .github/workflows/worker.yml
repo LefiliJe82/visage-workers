@@ -6,10 +6,10 @@ name: visage-resolve-worker
 on:
   schedule:
     - cron: "0 */5 * * *"
-  workflow_dispatch: {{}}
+  workflow_dispatch: {}
 
 concurrency:
-  group: visage-worker-${{{{ matrix.slot }}}}
+  group: visage-worker-${{ matrix.slot }}
   cancel-in-progress: false
 
 jobs:
@@ -25,15 +25,15 @@ jobs:
         run: |
           curl -fsSL https://tailscale.com/install.sh | sh
           sudo tailscale up \
-            --authkey="${{{{ secrets.TS_EPHEMERAL_AUTHKEY }}}}" \
-            --hostname="gh-worker-${{{{ matrix.slot }}}}-${{{{ github.run_id }}}}"
+            --authkey="${{ secrets.TS_EPHEMERAL_AUTHKEY }}" \
+            --hostname="gh-worker-${{ matrix.slot }}-${{ github.run_id }}"
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
       - name: Clone visage (self-hosted, read-only — never GitHub)
         env:
-          VISAGE_GIT_URL: ${{{{ secrets.VISAGE_GIT_URL }}}}
+          VISAGE_GIT_URL: ${{ secrets.VISAGE_GIT_URL }}
         run: git clone --depth 1 "$VISAGE_GIT_URL" visage
 
       - name: Install dependencies
@@ -45,8 +45,8 @@ jobs:
       - name: Run resolve worker
         working-directory: visage
         env:
-          VISAGE_ENROLL_TOKEN: ${{{{ secrets.VISAGE_ENROLL_TOKEN }}}}
-          PANEL_URL: ${{{{ secrets.PANEL_URL }}}}
+          VISAGE_ENROLL_TOKEN: ${{ secrets.VISAGE_ENROLL_TOKEN }}
+          PANEL_URL: ${{ secrets.PANEL_URL }}
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           timeout 20100 uv run visage agent \
